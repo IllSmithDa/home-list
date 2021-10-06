@@ -1,0 +1,21 @@
+{
+  "name": "home-server",
+  "version": "1.0.0",
+  "description": "server for home-search, used to parse csv files and retrieve home data",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm test",
+    "start": "nodemon server.js"
+  },
+  "keywords": [
+    "home"
+  ],
+  "author": "Sam Kim",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "jquery-csv": "^1.0.21",
+    "nodemon": "^2.0.13"
+  }
+}
