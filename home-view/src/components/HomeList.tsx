@@ -1,4 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+const GridBox = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  width: 1200px;
+  margin: auto;
+  @media (max-width: 1250px) {
+    width: 90%;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 750px) {
+    grid-template-columns: 1fr;
+  }
+`
+const SearchBar = styled.div`
+  width: 500px;
+  margin: auto;
+  height: 42px;
+  border-radius: 50px;
+  background-color: #FFF;
+  @media (max-width: 750px) {
+    width: 90%;
+  }
+`
 
 function HomeList (props: any) {
   const [homeList, setHomeList] = useState([]);
@@ -33,15 +60,7 @@ function HomeList (props: any) {
         {homesLoaded ? 
             <div>
                 <div style={{ padding: '10px', backgroundColor: '#999'}}>
-                    <div 
-                        style={{
-                            width: '500px',
-                            margin:'auto',
-                            height: '42px',
-                            borderRadius: '50px',
-                            backgroundColor: '#FFF',
-                        }}
-                    >
+                    <SearchBar>
                         <input
                             onChange={searchList}
                             placeholder="search home addresses"
@@ -52,14 +71,9 @@ function HomeList (props: any) {
                                 outline: '0',
                             }}
                         />
-                    </div>
+                    </SearchBar>
                 </div>
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                    width: '90%',
-                    margin: 'auto',
-                }}>
+                <GridBox>
                 {displayHomes.map((home: any) => {
                     return (
                         <div
@@ -78,7 +92,7 @@ function HomeList (props: any) {
                         </div>
                     );
                 })}
-                </div>
+                </GridBox>
             </div>: <div />
         }
 

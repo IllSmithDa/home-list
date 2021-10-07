@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import HomeList from './components/HomeList';
-import { csv } from 'd3-fetch';
 import './App.css';
 
 function App() {
@@ -9,6 +8,7 @@ function App() {
   const [currentFile, setCurrentFile] = useState(data);
   const [allHomeData, setAllHomeData] = useState([]);
   const [retrievingData, setRetrievingData] = useState(false);
+  const [error, setError] = useState(data);
 
   const submitData = (dragFile: any) => {
   
@@ -28,9 +28,8 @@ function App() {
           setRetrievingData(false);
         })
         .catch((err) => {
-          
+          setError(err);
         })
-  
     };
     if (currentFile !== null && dragFile !== null){
       setRetrievingData(true);
@@ -77,7 +76,16 @@ function App() {
         onDrop={dragNewFile}
         onDragOver={handleDragOver}
       >
-        <h3>Drag and Drop CVS Files Here</h3>
+        <h3>Drag and Drop CSV Files Here</h3>
+      </div>
+      <div>
+        {
+          error ? 
+          <div>
+            <h1>Error: {error}</h1>
+          </div>:
+          <div />
+        }
       </div>
       <div>
         <input
