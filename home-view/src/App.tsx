@@ -8,43 +8,13 @@ function App() {
   const data: any = null;
   const [currentFile, setCurrentFile] = useState(data);
   const [allHomeData, setAllHomeData] = useState([]);
-  const [displayHomeData, setDisplayHomeData] = useState([]);
   const [retrievingData, setRetrievingData] = useState(false);
-  const csvJSON = (csv: any) => {
 
-    var lines=csv.split("\n");
+  const submitData = (dragFile: any) => {
   
-    var result = [];
-  
-    // NOTE: If your columns contain commas in their values, you'll need
-    // to deal with those before doing the next step 
-    // (you might convert them to &&& or something, then covert them back later)
-    // jsfiddle showing the issue https://jsfiddle.net/
-    var headers=lines[0].split(",");
-  
-    for(var i=1;i<lines.length;i++){
-  
-        var obj: any = {};
-        var currentline=lines[i].split(",");
-  
-        for(var j=0;j<headers.length;j++){
-          obj[headers[j]] = currentline[j];
-        }
-  
-        result.push(obj);
-  
-    }
-  
-    //return result; //JavaScript object
-    return JSON.stringify(result); //JSON
-  }
-  const submitData = async () => {
-    setRetrievingData(true);
-    console.log(currentFile);
     let reader = new FileReader();
     let binaryData : String;
     reader.onload = function(evt) {
-      console.log(evt?.target?.result);
       binaryData = String(evt?.target?.result);
       axios({
         method: 'POST',
@@ -55,7 +25,6 @@ function App() {
       })
         .then((res: AxiosResponse<any>) => {
           setAllHomeData(res.data.homeData);
-          setDisplayHomeData(res.data.homeData);
           setRetrievingData(false);
         })
         .catch((err) => {
@@ -63,8 +32,10 @@ function App() {
         })
   
     };
-    reader.readAsBinaryString(currentFile);
-
+    if (currentFile !== null && dragFile !== null){
+      setRetrievingData(true);
+      reader.readAsBinaryString(currentFile === null ? dragFile : currentFile);
+    } 
   }
   const getNewFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -74,14 +45,74 @@ function App() {
     }
 
   }
-
+  const dragNewFile = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    for (let i = 0; i < event.dataTransfer.items.length; i++) {
+      // If dropped items aren't files, reject them
+      if (event.dataTransfer.items[i].kind === 'file') {
+        const file = event.dataTransfer.files[0];
+        setCurrentFile(file);
+        submitData(file);
+      }
+    }
+  }
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  }
   return (
-    <div className="App">
-      <div>
-        <input id="csv" type="file" multiple onChange={getNewFile} />
+    <div
+      style={{
+        textAlign: 'center',
+      }}
+      onDragOver={handleDragOver} 
+    >
+      <div 
+        style={{
+          border: '1px solid #000',
+          width: '40%',
+          margin: '2rem auto',
+          padding: '50px'
+        }}
+        draggable="true"
+        onDrop={dragNewFile}
+        onDragOver={handleDragOver}
+      >
+        <h3>Drag and Drop CVS Files Here</h3>
       </div>
       <div>
-        <button onClick={() => { submitData(); }} >Submit</button>
+        <input
+          id="csv"
+          type="file"
+          accept=".csv"
+          style={{
+            border: 'none',
+            borderRadius: '5px',
+            fontSize: '1.1em',
+            fontWeight: 500,
+            padding: '10px 16px',
+            cursor: 'pointer'
+          }}
+          onChange={getNewFile} />
+      </div>
+      <div
+        style={{
+          margin: '1em'
+        }}
+      >
+        <button
+          onClick={submitData}
+          style={{
+            backgroundColor: '#DDD',
+            border: 'none',
+            borderRadius: '5px',
+            fontSize: '1.1em',
+            fontWeight: 500,
+            padding: '10px 16px',
+            cursor: 'pointer'
+          }}
+        >
+            Submit
+        </button>
       </div>
       <div>
       {
@@ -90,7 +121,7 @@ function App() {
             <h1>Loading ....</h1>
           </div> : 
           <div>
-            <HomeList homeList={displayHomeData} />
+            <HomeList homeList={allHomeData} />
           </div>
       }
       </div>

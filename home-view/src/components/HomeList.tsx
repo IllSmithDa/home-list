@@ -4,7 +4,6 @@ function HomeList (props: any) {
   const [homeList, setHomeList] = useState([]);
   const [displayHomes, setDisplayHomes] = useState([]);
   const [homesLoaded, setHomesLoaded] = useState(false);
-  const [searchAddress, setSearchAddress] = useState(String);
   useEffect(() => {
     if (props.homeList?.length > 0) {
         console.log(props.homeList);
@@ -15,9 +14,7 @@ function HomeList (props: any) {
   }, [props.homeList])
   const searchList = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-    console.log(event.currentTarget.value);
     const searchTerm = event.currentTarget.value;
-    setSearchAddress(searchTerm);
     setHomesLoaded(false);
     const searchTest = RegExp(searchTerm ? searchTerm.toUpperCase() : '');
     const searchResults: any = [];
@@ -30,19 +27,7 @@ function HomeList (props: any) {
     setDisplayHomes(searchResults);
     setHomesLoaded(true);
   }
-  const getResults = () => {
-    setHomesLoaded(false);
-    const searchTest = RegExp(searchAddress ? searchAddress.toUpperCase() : '');
-    const searchResults: any = [];
-    homeList.forEach((home: any) => {
-        console.log(home);
-        if (searchTest.test(String(home.ADDRESS).toUpperCase())) {
-          searchResults.push(home);
-        }
-    });
-    setDisplayHomes(searchResults);
-    setHomesLoaded(true);
-  }
+
   return (
     <div>
         {homesLoaded ? 
@@ -67,7 +52,6 @@ function HomeList (props: any) {
                                 outline: '0',
                             }}
                         />
-                        <button onClick={getResults}>Submit</button>
                     </div>
                 </div>
                 <div style={{
