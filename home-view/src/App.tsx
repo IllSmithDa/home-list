@@ -63,7 +63,6 @@ function App() {
       style={{
         textAlign: 'center',
       }}
-      onDragOver={handleDragOver} 
     >
       <div 
         style={{

@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import {
+  Pagination,
+  Box
+} from '@mui/material';
+
 const GridBox = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -29,13 +34,28 @@ const SearchBar = styled.div`
 
 function HomeList (props: any) {
   const [homeList, setHomeList] = useState([]);
+  const [homeQueryList, setHomeQueryList] = useState([]);
   const [displayHomes, setDisplayHomes] = useState([]);
   const [homesLoaded, setHomesLoaded] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const paginate = (page_number: number) => {
+    setHomesLoaded(false);
+    // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
+    const newList = homeQueryList.slice((page_number - 1) * itemsPerPage, page_number * itemsPerPage);
+    setDisplayHomes(newList);
+    setHomesLoaded(true);
+  }
+
   useEffect(() => {
     if (props.homeList?.length > 0) {
-        console.log(props.homeList);
         setHomeList(props.homeList);
-        setDisplayHomes(props.homeList);
+        const newList = props.homeList.slice(0, itemsPerPage);
+        console.log(Math.ceil(props.homeList.length/itemsPerPage));
+        setTotalPages(Math.ceil(props.homeList.length/itemsPerPage));
+        setDisplayHomes(newList);
+        setHomeQueryList(props.homeList);
         setHomesLoaded(true);
     }
   }, [props.homeList])
@@ -51,10 +71,19 @@ function HomeList (props: any) {
           searchResults.push(home);
         }
     });
-    setDisplayHomes(searchResults);
+
+    const newList = searchResults.slice(0, itemsPerPage);
+    setHomeQueryList(searchResults);
+    setTotalPages(Math.ceil(searchResults.length/itemsPerPage));
+    setDisplayHomes(newList);
     setHomesLoaded(true);
   }
-
+  const changePage = (event: React.ChangeEvent<unknown>, page: number) => {
+    console.log(page);
+    if (page) {
+      paginate(page);
+    }
+  }
   return (
     <div>
         {homesLoaded ? 
@@ -93,6 +122,19 @@ function HomeList (props: any) {
                     );
                 })}
                 </GridBox>
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  m="1rem"
+                >
+                  <Pagination
+                    count={totalPages}
+                    variant="outlined"
+                    shape="rounded"
+                    color="primary"
+                    onChange={changePage}
+                  />
+                </Box>
             </div>: <div />
         }
 
